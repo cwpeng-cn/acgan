@@ -9,14 +9,14 @@ DATASET_PATH = './anime'
 LOG_G_PATH = "Log_G.txt"
 LOG_D_PATH = "Log_D.txt"
 IMAGE_SIZE = 64
-BATCH_SIZE = 256
+BATCH_SIZE = 128
 WORKER = 1
 LR = 0.0002
 NZ = 100
 EPOCH = 50
 
 dataset = AnimeDataset(dataset_path='./anime', image_size=IMAGE_SIZE)
-data_loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
+data_loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True,drop_last=True)
 NUM_EYE = len(dataset.EYES)
 NUM_HAIR = len(dataset.HAIRS)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
