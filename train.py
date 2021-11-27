@@ -16,7 +16,7 @@ NZ = 100
 EPOCH = 50
 
 dataset = AnimeDataset(dataset_path='./anime', image_size=IMAGE_SIZE)
-data_loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True,drop_last=True)
+data_loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True, drop_last=True)
 NUM_EYE = len(dataset.EYES)
 NUM_HAIR = len(dataset.HAIRS)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -34,9 +34,7 @@ d_writer = LossWriter(save_path=LOG_D_PATH)
 
 fix_noise = torch.randn(BATCH_SIZE, NZ, device=device)
 fix_input_eye = (torch.rand(BATCH_SIZE, 1) * NUM_EYE).type(torch.LongTensor).squeeze().to(device)
-fix_input_eye = onehot(fix_input_eye, NUM_EYE)
 fix_input_hair = (torch.rand(BATCH_SIZE, 1) * NUM_HAIR).type(torch.LongTensor).squeeze().to(device)
-fix_input_hair = onehot(fix_input_hair, NUM_HAIR)
 
 img_list = []
 G_losses = []
@@ -87,11 +85,9 @@ for epoch in range(EPOCH):
         noise = torch.randn(b_size, NZ, device=device)
         # 生成随机标签
         input_eye = (torch.rand(BATCH_SIZE, 1) * NUM_EYE).type(torch.LongTensor).squeeze().to(device)
-        input_eye_onehot = onehot(input_eye, NUM_EYE)
         input_hair = (torch.rand(BATCH_SIZE, 1) * NUM_HAIR).type(torch.LongTensor).squeeze().to(device)
-        input_hair_onehot = onehot(input_hair, NUM_HAIR)
         # 来自生成器生成的样本
-        fake = netG(noise, input_eye_onehot, input_hair_onehot)
+        fake = netG(noise, input_eye, input_hair)
         label.fill_(fake_label)
         # 使用鉴别器对生成器生成样本做判断
         output_d, output_eye, output_hair = netD(fake.detach())

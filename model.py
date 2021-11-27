@@ -1,5 +1,6 @@
 import torch
 from torch import nn
+from data import onehot
 
 
 def weights_init(m):
@@ -14,6 +15,8 @@ def weights_init(m):
 class Generator(nn.Module):
     def __init__(self, num_channel=3, nz=100, neye=11, nhair=12, ngf=64):
         super(Generator, self).__init__()
+        self.neye = neye
+        self.nhair = nhair
         self.main = nn.Sequential(
             # 输入维度 (100+11+12) x 1 x 1
             nn.ConvTranspose2d(nz + neye + nhair, ngf * 8, 4, 1, 0, bias=False),
@@ -38,8 +41,10 @@ class Generator(nn.Module):
         )
         self.apply(weights_init)
 
-    def forward(self, input_z, onehot_eye, onrhot_hair):
-        input_ = torch.cat((input_z, onehot_eye, onrhot_hair), dim=1)
+    def forward(self, input_z, eye, hair):
+        onehot_eye = onehot(eye, self.neye)
+        onehot_hair = onehot(hair, self.nhair)
+        input_ = torch.cat((input_z, onehot_eye, onehot_hair), dim=1)
         n, c = input_.size()
         input_ = input_.view(n, c, 1, 1)
         return self.main(input_)
