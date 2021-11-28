@@ -1,10 +1,10 @@
 import os
 import torch
 import numpy as np
+import pylab as plt
 from PIL import Image
 from torchvision import transforms
 from torch.utils.data import Dataset
-import pylab as plt
 
 
 class LossWriter:
@@ -97,7 +97,7 @@ def restore_network(path, epoch, network=None):
 
 
 if __name__ == '__main__':
-    dataset = AnimeDataset(dataset_path="./anime", image_size=128)
+    dataset = AnimeDataset(dataset_path="./anime", image_size=64)
     data_loader = torch.utils.data.DataLoader(dataset=dataset, batch_size=1, shuffle=False)
     for i, data in enumerate(data_loader):
         img, eye, hair = data

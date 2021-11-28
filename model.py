@@ -51,7 +51,7 @@ class Generator(nn.Module):
 
 
 class Discriminator(nn.Module):
-    def __init__(self, num_channel=3, neye=11, nhair=12, ndf=64, ):
+    def __init__(self, num_channel=3, neye=11, nhair=12, ndf=64):
         super(Discriminator, self).__init__()
 
         self.main = nn.Sequential(
@@ -79,7 +79,6 @@ class Discriminator(nn.Module):
         )
         self.eye_classifier = nn.Conv2d(ndf * 8, neye, 4, 1, 0, bias=False)
         self.hair_classifier = nn.Conv2d(ndf * 8, nhair, 4, 1, 0, bias=False)
-        self.softmax = nn.Softmax()
 
         self.apply(weights_init)
 
@@ -97,20 +96,14 @@ class Discriminator(nn.Module):
 
 if __name__ == "__main__":
     from data import onehot
-
-    BATCH_SIZE = 8
-    NUM_EYE = 11
-    NUM_HAIR = 12
-    NZ = 100
     device = "cpu"
+    BATCH_SIZE, NUM_EYE, NUM_HAIR, NZ = 8, 11, 12, 100
     input_eye = (torch.rand(BATCH_SIZE, 1) * NUM_EYE).type(torch.LongTensor).squeeze().to(device)
-    input_eye = onehot(input_eye, NUM_EYE)
     input_hair = (torch.rand(BATCH_SIZE, 1) * NUM_HAIR).type(torch.LongTensor).squeeze().to(device)
-    input_hair = onehot(input_hair, NUM_HAIR)
     netG = Generator().to(device)
     netD = Discriminator().to(device)
     noise = torch.randn(BATCH_SIZE, NZ, device=device)
     images = netG(noise, input_eye, input_hair).detach().cpu()
-    print("生成器输出图片尺寸：", images.shape)
+    print("生成器输出图片尺寸:\t", images.shape)
     output_d, output_eye, output_hair = netD(images)
-    print("判别器输出尺寸：真假:{}，眼睛:{}，头发:{}".format(output_d.shape, output_eye.shape, output_hair.shape))
+    print("判别器输出尺寸:\t 真假:{}，眼睛类别:{}，头发类别:{}".format(output_d.shape, output_eye.shape, output_hair.shape))
