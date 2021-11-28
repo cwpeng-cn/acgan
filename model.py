@@ -22,7 +22,7 @@ class Generator(nn.Module):
 
         self.main = nn.Sequential(
             # 输入维度 (100+11+12) x 1 x 1
-            nn.ConvTranspose2d(nz + 8 + 8, ngf * 8, 4, 1, 0, bias=False),
+            nn.ConvTranspose2d(nz + neye + nhair, ngf * 8, 4, 1, 0, bias=False),
             nn.BatchNorm2d(ngf * 8),
             nn.ReLU(True),
             # 特征维度 (ngf*8) x 4 x 4
