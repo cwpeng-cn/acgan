@@ -53,7 +53,6 @@ class Generator(nn.Module):
 class Discriminator(nn.Module):
     def __init__(self, num_channel=3, neye=11, nhair=12, ndf=64):
         super(Discriminator, self).__init__()
-
         self.main = nn.Sequential(
             # 输入维度 num_channel x 64 x 64
             nn.Conv2d(num_channel, ndf, 4, 2, 1, bias=False),
@@ -77,18 +76,21 @@ class Discriminator(nn.Module):
             nn.Conv2d(ndf * 8, 1, 4, 1, 0, bias=False),
             nn.Sigmoid()
         )
-        self.eye_classifier = nn.Conv2d(ndf * 8, neye, 4, 1, 0, bias=False)
-        self.hair_classifier = nn.Conv2d(ndf * 8, nhair, 4, 1, 0, bias=False)
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.eye_classifier = nn.Linear(ndf * 8, neye)
+        self.hair_classifier = nn.Linear(ndf * 8, nhair)
 
         self.apply(weights_init)
 
     def forward(self, images):
+        n = images.shape[0]
         feature = self.main(images)
         real_fake = self.discriminator(feature)
+        feature = self.avg_pool(feature)
+        feature = feature.view(n, -1)
         c_eye = self.eye_classifier(feature)
         c_hair = self.hair_classifier(feature)
         real_fake = real_fake.view(-1)
-        n = real_fake.shape[0]
         c_eye = c_eye.view(n, -1)
         c_hair = c_hair.view(n, -1)
         return real_fake, c_eye, c_hair
