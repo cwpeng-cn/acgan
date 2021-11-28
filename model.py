@@ -17,8 +17,8 @@ class Generator(nn.Module):
         super(Generator, self).__init__()
         self.neye = neye
         self.nhair = nhair
-        self.eye_emb = torch.nn.Embedding(neye, n_dim)
-        self.hair_emb = torch.nn.Embedding(nhair, n_dim)
+        # self.eye_emb = torch.nn.Embedding(neye, n_dim)
+        # self.hair_emb = torch.nn.Embedding(nhair, n_dim)
 
         self.main = nn.Sequential(
             # 输入维度 (100+11+12) x 1 x 1
@@ -45,8 +45,10 @@ class Generator(nn.Module):
         self.apply(weights_init)
 
     def forward(self, input_z, eye, hair):
-        eye = self.eye_emb(eye)
-        hair = self.hair_emb(hair)
+        # eye = self.eye_emb(eye)
+        # hair = self.hair_emb(hair)
+        eye = onehot(eye, self.neye)
+        hair = onehot(hair, self.nhair)
         input_ = torch.cat((input_z, eye, hair), dim=1)
         n, c = input_.size()
         input_ = input_.view(n, c, 1, 1)
