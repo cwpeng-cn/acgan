@@ -13,7 +13,7 @@ BATCH_SIZE = 128
 WORKER = 1
 LR = 0.0002
 NZ = 100
-EPOCH = 50
+EPOCH = 150
 
 dataset = AnimeDataset(dataset_path='./anime', image_size=IMAGE_SIZE)
 data_loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True, drop_last=True)
