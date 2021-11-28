@@ -33,8 +33,8 @@ g_writer = LossWriter(save_path=LOG_G_PATH)
 d_writer = LossWriter(save_path=LOG_D_PATH)
 
 fix_noise = torch.randn(BATCH_SIZE, NZ, device=device)
-fix_input_eye = torch.LongTensor([i % NUM_EYE for i in range(BATCH_SIZE)]).squeeze().to(device)
-fix_input_hair = torch.LongTensor([i % NUM_HAIR for i in range(BATCH_SIZE)]).squeeze().to(device)
+fix_input_eye = torch.LongTensor([i // 5 for i in range(BATCH_SIZE)]).squeeze().to(device)
+fix_input_hair = torch.LongTensor([i % 5 for i in range(BATCH_SIZE)]).squeeze().to(device)
 
 img_list = []
 G_losses = []
