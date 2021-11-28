@@ -13,13 +13,16 @@ def weights_init(m):
 
 
 class Generator(nn.Module):
-    def __init__(self, num_channel=3, nz=100, neye=11, nhair=12, ngf=64):
+    def __init__(self, num_channel=3, nz=100, neye=11, nhair=12, ngf=64, n_dim=8):
         super(Generator, self).__init__()
         self.neye = neye
         self.nhair = nhair
+        self.eye_emb = torch.nn.Embedding(neye, n_dim)
+        self.hair_emb = torch.nn.Embedding(nhair, n_dim)
+
         self.main = nn.Sequential(
             # 输入维度 (100+11+12) x 1 x 1
-            nn.ConvTranspose2d(nz + neye + nhair, ngf * 8, 4, 1, 0, bias=False),
+            nn.ConvTranspose2d(nz + 8 + 8, ngf * 8, 4, 1, 0, bias=False),
             nn.BatchNorm2d(ngf * 8),
             nn.ReLU(True),
             # 特征维度 (ngf*8) x 4 x 4
@@ -42,9 +45,9 @@ class Generator(nn.Module):
         self.apply(weights_init)
 
     def forward(self, input_z, eye, hair):
-        onehot_eye = onehot(eye, self.neye)
-        onehot_hair = onehot(hair, self.nhair)
-        input_ = torch.cat((input_z, onehot_eye, onehot_hair), dim=1)
+        eye = self.eye_emb(eye)
+        hair = self.hair_emb(hair)
+        input_ = torch.cat((input_z, eye, hair), dim=1)
         n, c = input_.size()
         input_ = input_.view(n, c, 1, 1)
         return self.main(input_)
