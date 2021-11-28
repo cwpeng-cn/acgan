@@ -1,5 +1,5 @@
-from torch import optim
 from torch import nn
+from torch import optim
 from torch.utils.data import DataLoader
 from data import *
 from model import Generator, Discriminator
@@ -33,13 +33,14 @@ g_writer = LossWriter(save_path=LOG_G_PATH)
 d_writer = LossWriter(save_path=LOG_D_PATH)
 
 fix_noise = torch.randn(BATCH_SIZE, NZ, device=device)
-fix_input_eye = (torch.rand(BATCH_SIZE, 1) * NUM_EYE).type(torch.LongTensor).squeeze().to(device)
-fix_input_hair = (torch.rand(BATCH_SIZE, 1) * NUM_HAIR).type(torch.LongTensor).squeeze().to(device)
+fix_input_eye = torch.LongTensor([i % NUM_EYE for i in range(BATCH_SIZE)]).squeeze().to(device)
+fix_input_hair = torch.LongTensor([i % NUM_HAIR for i in range(BATCH_SIZE)]).squeeze().to(device)
 
 img_list = []
 G_losses = []
 D_losses = []
 iters = 0
+loss_weights = [1.5, 0.75, 0.75]
 
 print("开始训练>>>")
 for epoch in range(EPOCH):
@@ -76,9 +77,9 @@ for epoch in range(EPOCH):
         errD_real = criterion_bce(output_d, label)
         errD_eye = criterion_ce(output_eye, input_eye)
         errD_hair = criterion_ce(output_hair, input_hair)
-        errD_real = errD_real + errD_eye + errD_hair
+        errD_real_total = loss_weights[0] * errD_real + loss_weights[1] * errD_eye + loss_weights[2] * errD_hair
         # 对判别器进行梯度回传
-        errD_real.backward()
+        errD_real_total.backward()
         D_x = output_d.mean().item()
 
         # 1.2 生成随机向量
@@ -95,13 +96,13 @@ for epoch in range(EPOCH):
         errD_fake = criterion_bce(output_d, label)
         errD_eye = criterion_ce(output_eye, input_eye)
         errD_hair = criterion_ce(output_hair, input_hair)
-        errD_fake = errD_fake + errD_eye + errD_hair
+        errD_fake_total = loss_weights[0] * errD_fake + loss_weights[1] * errD_eye + loss_weights[2] * errD_hair
         # 对判别器进行梯度回传
-        errD_fake.backward()
+        errD_fake_total.backward()
         D_G_z1 = output_d.mean().item()
 
         # 对判别器计算总梯度,-log(D(x))-log(1 - D(G(z)))
-        errD = errD_real + errD_fake
+        errD = errD_real_total + errD_fake_total
         # 更新判别器
         optimizerD.step()
 
@@ -120,7 +121,7 @@ for epoch in range(EPOCH):
         errG = criterion_bce(output_d, label)
         errG_eye = criterion_ce(output_eye, input_eye)
         errG_hair = criterion_ce(output_hair, input_hair)
-        errG = errG + errG_eye + errG_hair
+        errG = loss_weights[0] * errG + loss_weights[1] * errG_eye + loss_weights[2] * errG_hair
         # 对生成器进行梯度回传
         errG.backward()
         D_G_z2 = output_d.mean().item()

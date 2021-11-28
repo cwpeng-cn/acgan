@@ -96,6 +96,7 @@ class Discriminator(nn.Module):
 
 if __name__ == "__main__":
     from data import onehot
+
     device = "cpu"
     BATCH_SIZE, NUM_EYE, NUM_HAIR, NZ = 8, 11, 12, 100
     input_eye = (torch.rand(BATCH_SIZE, 1) * NUM_EYE).type(torch.LongTensor).squeeze().to(device)
