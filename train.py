@@ -45,18 +45,19 @@ loss_weights = [1.5, 0.75, 0.75]
 print("开始训练>>>")
 for epoch in range(EPOCH):
 
-    print("正在保存网络并评估...")
-    save_network(MODEL_G_PATH, netG, epoch)
-    with torch.no_grad():
-        fake_imgs = netG(fix_noise, fix_input_eye, fix_input_hair).detach().cpu()
-        images = recover_image(fake_imgs)
-        full_image = np.full((4 * 64, 4 * 64, 3), 0, dtype="uint8")
-        for i in range(16):
-            row = i // 4
-            col = i % 4
-            full_image[row * 64:(row + 1) * 64, col * 64:(col + 1) * 64, :] = images[i]
-        plt.imshow(full_image)
-        plt.imsave("{}.png".format(epoch), full_image)
+    if epoch % 3 == 0:
+        print("正在保存网络并评估...")
+        save_network(MODEL_G_PATH, netG, epoch)
+        with torch.no_grad():
+            fake_imgs = netG(fix_noise, fix_input_eye, fix_input_hair).detach().cpu()
+            images = recover_image(fake_imgs)
+            full_image = np.full((4 * 64, 4 * 64, 3), 0, dtype="uint8")
+            for i in range(16):
+                row = i // 4
+                col = i % 4
+                full_image[row * 64:(row + 1) * 64, col * 64:(col + 1) * 64, :] = images[i]
+            plt.imshow(full_image)
+            plt.imsave("{}.png".format(epoch), full_image)
 
     for data in data_loader:
         #################################################

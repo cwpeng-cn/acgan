@@ -27,8 +27,8 @@ class AnimeDataset(Dataset):
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
         ])
-        self.EYES = ["blue", "red", "brown", "green"]
-        self.HAIRS = ["blonde", "brown", "black", "blue"]
+        self.EYES = ["blue", "red", "yellow", "green", "purple", "brown"]
+        self.HAIRS = ["blonde", "blue", "pink", "purple", "brown", "black"]
         self.img_paths, self.eye_ids, self.hair_ids = self.process(dataset_path)
 
     def process(self, dataset_path):
@@ -104,4 +104,4 @@ if __name__ == '__main__':
         img = recover_image(img)[0]
         plt.title("eye:" + dataset.EYES[eye] + "  " + "hair:" + dataset.HAIRS[hair])
         plt.imshow(img)
-        plt.pause(1)
+        plt.pause(0.1)

@@ -13,7 +13,7 @@ def weights_init(m):
 
 
 class Generator(nn.Module):
-    def __init__(self, num_channel=3, nz=100, neye=4, nhair=4, ngf=64):
+    def __init__(self, num_channel=3, nz=100, neye=6, nhair=6, ngf=64):
         super(Generator, self).__init__()
         self.neye = neye
         self.nhair = nhair
@@ -52,7 +52,7 @@ class Generator(nn.Module):
 
 
 class Discriminator(nn.Module):
-    def __init__(self, num_channel=3, neye=4, nhair=4, ndf=64):
+    def __init__(self, num_channel=3, neye=6, nhair=6, ndf=64):
         super(Discriminator, self).__init__()
         self.main = nn.Sequential(
             # 输入维度 num_channel x 64 x 64
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     from data import onehot
 
     device = "cpu"
-    BATCH_SIZE, NUM_EYE, NUM_HAIR, NZ = 8, 4, 4, 100
+    BATCH_SIZE, NUM_EYE, NUM_HAIR, NZ = 8, 6, 6, 100
     input_eye = (torch.rand(BATCH_SIZE, 1) * NUM_EYE).type(torch.LongTensor).squeeze().to(device)
     input_hair = (torch.rand(BATCH_SIZE, 1) * NUM_HAIR).type(torch.LongTensor).squeeze().to(device)
     netG = Generator().to(device)
