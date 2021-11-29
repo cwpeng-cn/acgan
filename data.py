@@ -27,10 +27,8 @@ class AnimeDataset(Dataset):
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
         ])
-        self.EYES = ['gray eyes', 'aqua eyes', 'yellow eyes', 'black eyes', 'orange eyes', 'blue eyes',
-                     'red eyes', 'pink eyes', 'purple eyes', 'green eyes', 'brown eyes']
-        self.HAIRS = ['orange hair', 'white hair', 'aqua hair', 'gray hair', 'green hair', 'red hair',
-                      'purple hair', 'pink hair', 'blue hair', 'black hair', 'brown hair', 'blonde hair']
+        self.EYES = ["blue", "red", "brown", "green"]
+        self.HAIRS = ["blonde", "brown", "black", "blue"]
         self.img_paths, self.eye_ids, self.hair_ids = self.process(dataset_path)
 
     def process(self, dataset_path):
@@ -39,8 +37,10 @@ class AnimeDataset(Dataset):
         with open(label_path, 'r') as f:
             lines = f.readlines()
             for line in lines:
-                index, eye, hair = line.split('\n')[0].split('\t')
-                img_path = os.path.join(dataset_path, "images", "{}.jpg".format(index))
+                name, eye, hair = line.split('\n')[0].split('\t')
+                eye = eye.split(":")[1]
+                hair = hair.split(":")[1]
+                img_path = os.path.join(dataset_path, "images", name)
                 eye_id = self.EYES.index(eye)
                 hair_id = self.HAIRS.index(hair)
                 img_paths.append(img_path)
@@ -102,6 +102,6 @@ if __name__ == '__main__':
     for i, data in enumerate(data_loader):
         img, eye, hair = data
         img = recover_image(img)[0]
-        plt.title(dataset.EYES[eye] + "  " + dataset.HAIRS[hair])
+        plt.title("eye:" + dataset.EYES[eye] + "  " + "hair:" + dataset.HAIRS[hair])
         plt.imshow(img)
         plt.pause(1)

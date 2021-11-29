@@ -13,9 +13,9 @@ BATCH_SIZE = 128
 WORKER = 1
 LR = 0.0002
 NZ = 100
-EPOCH = 150
+EPOCH = 400
 
-dataset = AnimeDataset(dataset_path='./anime', image_size=IMAGE_SIZE)
+dataset = AnimeDataset(dataset_path=DATASET_PATH, image_size=IMAGE_SIZE)
 data_loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True, drop_last=True)
 NUM_EYE = len(dataset.EYES)
 NUM_HAIR = len(dataset.HAIRS)
@@ -33,11 +33,8 @@ g_writer = LossWriter(save_path=LOG_G_PATH)
 d_writer = LossWriter(save_path=LOG_D_PATH)
 
 fix_noise = torch.randn(BATCH_SIZE, NZ, device=device)
-fix_input_eye = torch.LongTensor([(i // 5) % NUM_EYE for i in range(BATCH_SIZE)]).squeeze().to(device)
-fix_input_hair = torch.LongTensor([(i // 5) % NUM_HAIR for i in range(BATCH_SIZE)]).squeeze().to(device)
-
-print(fix_input_eye[:25])
-print(fix_input_hair[:25])
+fix_input_eye = torch.LongTensor([(i // 4) % NUM_EYE for i in range(BATCH_SIZE)]).squeeze().to(device)
+fix_input_hair = torch.LongTensor([(i % 4) % NUM_HAIR for i in range(BATCH_SIZE)]).squeeze().to(device)
 
 img_list = []
 G_losses = []
@@ -53,10 +50,10 @@ for epoch in range(EPOCH):
     with torch.no_grad():
         fake_imgs = netG(fix_noise, fix_input_eye, fix_input_hair).detach().cpu()
         images = recover_image(fake_imgs)
-        full_image = np.full((5 * 64, 5 * 64, 3), 0, dtype="uint8")
-        for i in range(25):
-            row = i // 5
-            col = i % 5
+        full_image = np.full((4 * 64, 4 * 64, 3), 0, dtype="uint8")
+        for i in range(16):
+            row = i // 4
+            col = i % 4
             full_image[row * 64:(row + 1) * 64, col * 64:(col + 1) * 64, :] = images[i]
         plt.imshow(full_image)
         plt.imsave("{}.png".format(epoch), full_image)
