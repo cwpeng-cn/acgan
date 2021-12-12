@@ -11,7 +11,7 @@ EYES, HAIRS = dataset.EYES, dataset.HAIRS
 NUM_EYE, NUM_HAIR = len(EYES), len(HAIRS)
 
 netG = Generator().to(DEVICE)
-netG = restore_network("./", "last", netG)
+netG = restore_network("./", "acgan_generator", netG)
 
 # 眼睛颜色控制
 selected_eye = [0, 1]
@@ -45,4 +45,3 @@ for row in range(ROW):
 plt.imshow(full_images)
 plt.show()
 plt.imsave("hair.png", full_images)
-
