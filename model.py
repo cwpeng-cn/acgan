@@ -19,7 +19,7 @@ class Generator(nn.Module):
         self.nhair = nhair
 
         self.main = nn.Sequential(
-            # 输入维度 (100+11+12) x 1 x 1
+            # 输入维度 (100+6+6) x 1 x 1
             nn.ConvTranspose2d(nz + neye + nhair, ngf * 8, 4, 1, 0, bias=False),
             nn.BatchNorm2d(ngf * 8),
             nn.ReLU(True),
@@ -99,7 +99,6 @@ class Discriminator(nn.Module):
 
 if __name__ == "__main__":
     from data import onehot
-
     device = "cpu"
     BATCH_SIZE, NUM_EYE, NUM_HAIR, NZ = 8, 6, 6, 100
     input_eye = (torch.rand(BATCH_SIZE, 1) * NUM_EYE).type(torch.LongTensor).squeeze().to(device)
